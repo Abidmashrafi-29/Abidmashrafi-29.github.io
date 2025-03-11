@@ -1,4 +1,4 @@
-# Abid Mashrafi - Portfolio
+# Abidmashrafi-29.github.io
 
 🚀 Welcome to my personal portfolio!  
 
