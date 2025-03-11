@@ -1,4 +1,3 @@
-# Abidmashrafi-29.github.io
 # Abid Mashrafi - Portfolio
 
 🚀 Welcome to my personal portfolio!  
