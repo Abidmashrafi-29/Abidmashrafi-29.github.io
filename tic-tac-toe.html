@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe Game | Abid Mashrafi</title>
+    <link rel="icon" href="./assets/images/favicon/favicon.ico" type="image/x-icon">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+        }
+
+        .game-container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .back-link {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1rem;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .back-link:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .current-player, .score {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 10px;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto 30px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 15px;
+        }
+
+        .cell {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 10px;
+            font-size: 3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cell:hover:not(.taken) {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.05);
+        }
+
+        .cell.taken {
+            cursor: not-allowed;
+        }
+
+        .cell.x {
+            color: #e74c3c;
+        }
+
+        .cell.o {
+            color: #3498db;
+        }
+
+        .winning-cell {
+            background: #f1c40f !important;
+            animation: pulse 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .game-status {
+            margin: 20px 0;
+            font-size: 1.3rem;
+            font-weight: bold;
+            min-height: 30px;
+        }
+
+        .winner {
+            color: #f1c40f;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .draw {
+            color: #e67e22;
+        }
+
+        @media (max-width: 480px) {
+            .game-container {
+                padding: 20px;
+                margin: 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .game-board {
+                width: 250px;
+                height: 250px;
+            }
+
+            .cell {
+                font-size: 2.5rem;
+            }
+
+            .game-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>🎮 Tic-Tac-Toe</h1>
+            <a href="index.html" class="back-link">← Back to Portfolio</a>
+        </div>
+        
+        <div class="game-info">
+            <div class="current-player">Current Player: <span id="currentPlayer">X</span></div>
+            <div class="score">
+                X: <span id="scoreX">0</span> | O: <span id="scoreO">0</span> | Draws: <span id="scoreDraw">0</span>
+            </div>
+        </div>
+
+        <div class="game-status" id="gameStatus">Click a cell to start playing!</div>
+
+        <div class="game-board" id="gameBoard">
+            <button class="cell" data-index="0"></button>
+            <button class="cell" data-index="1"></button>
+            <button class="cell" data-index="2"></button>
+            <button class="cell" data-index="3"></button>
+            <button class="cell" data-index="4"></button>
+            <button class="cell" data-index="5"></button>
+            <button class="cell" data-index="6"></button>
+            <button class="cell" data-index="7"></button>
+            <button class="cell" data-index="8"></button>
+        </div>
+
+        <div class="controls">
+            <button class="btn" id="restartBtn">🔄 Restart Game</button>
+            <button class="btn" id="resetScoreBtn">📊 Reset Score</button>
+        </div>
+    </div>
+
+    <script>
+        class TicTacToe {
+            constructor() {
+                this.board = Array(9).fill('');
+                this.currentPlayer = 'X';
+                this.gameActive = true;
+                this.scores = {
+                    X: 0,
+                    O: 0,
+                    draw: 0
+                };
+
+                this.winningConditions = [
+                    [0, 1, 2],
+                    [3, 4, 5],
+                    [6, 7, 8],
+                    [0, 3, 6],
+                    [1, 4, 7],
+                    [2, 5, 8],
+                    [0, 4, 8],
+                    [2, 4, 6]
+                ];
+
+                this.initializeGame();
+            }
+
+            initializeGame() {
+                // Get DOM elements
+                this.cells = document.querySelectorAll('.cell');
+                this.gameStatus = document.getElementById('gameStatus');
+                this.currentPlayerDisplay = document.getElementById('currentPlayer');
+                this.scoreX = document.getElementById('scoreX');
+                this.scoreO = document.getElementById('scoreO');
+                this.scoreDraw = document.getElementById('scoreDraw');
+                this.restartBtn = document.getElementById('restartBtn');
+                this.resetScoreBtn = document.getElementById('resetScoreBtn');
+
+                // Add event listeners
+                this.cells.forEach(cell => {
+                    cell.addEventListener('click', (e) => this.handleCellClick(e));
+                });
+                this.restartBtn.addEventListener('click', () => this.restartGame());
+                this.resetScoreBtn.addEventListener('click', () => this.resetScore());
+
+                // Load saved scores
+                this.loadScores();
+                this.updateDisplay();
+            }
+
+            handleCellClick(event) {
+                const clickedCell = event.target;
+                const clickedCellIndex = parseInt(clickedCell.getAttribute('data-index'));
+
+                if (this.board[clickedCellIndex] !== '' || !this.gameActive) {
+                    return;
+                }
+
+                this.board[clickedCellIndex] = this.currentPlayer;
+                clickedCell.textContent = this.currentPlayer;
+                clickedCell.classList.add('taken', this.currentPlayer.toLowerCase());
+
+                this.checkResult();
+            }
+
+            checkResult() {
+                let roundWon = false;
+                let winningCombination = null;
+
+                for (let i = 0; i < this.winningConditions.length; i++) {
+                    const winCondition = this.winningConditions[i];
+                    const a = this.board[winCondition[0]];
+                    const b = this.board[winCondition[1]];
+                    const c = this.board[winCondition[2]];
+
+                    if (a === '' || b === '' || c === '') {
+                        continue;
+                    }
+                    if (a === b && b === c) {
+                        roundWon = true;
+                        winningCombination = winCondition;
+                        break;
+                    }
+                }
+
+                if (roundWon) {
+                    this.gameStatus.innerHTML = `🎉 Player ${this.currentPlayer} wins!`;
+                    this.gameStatus.className = 'game-status winner';
+                    this.scores[this.currentPlayer]++;
+                    this.gameActive = false;
+                    this.highlightWinningCells(winningCombination);
+                    this.saveScores();
+                    this.updateScoreDisplay();
+                    return;
+                }
+
+                const roundDraw = !this.board.includes('');
+                if (roundDraw) {
+                    this.gameStatus.innerHTML = `🤝 It's a draw!`;
+                    this.gameStatus.className = 'game-status draw';
+                    this.scores.draw++;
+                    this.gameActive = false;
+                    this.saveScores();
+                    this.updateScoreDisplay();
+                    return;
+                }
+
+                this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
+                this.gameStatus.innerHTML = `Player ${this.currentPlayer}'s turn`;
+                this.gameStatus.className = 'game-status';
+                this.currentPlayerDisplay.textContent = this.currentPlayer;
+            }
+
+            highlightWinningCells(winningCombination) {
+                winningCombination.forEach(index => {
+                    this.cells[index].classList.add('winning-cell');
+                });
+            }
+
+            restartGame() {
+                this.board = Array(9).fill('');
+                this.currentPlayer = 'X';
+                this.gameActive = true;
+                this.gameStatus.innerHTML = 'Click a cell to start playing!';
+                this.gameStatus.className = 'game-status';
+                this.currentPlayerDisplay.textContent = 'X';
+
+                this.cells.forEach(cell => {
+                    cell.textContent = '';
+                    cell.className = 'cell';
+                });
+            }
+
+            resetScore() {
+                this.scores = {
+                    X: 0,
+                    O: 0,
+                    draw: 0
+                };
+                this.saveScores();
+                this.updateScoreDisplay();
+            }
+
+            updateDisplay() {
+                this.updateScoreDisplay();
+                this.currentPlayerDisplay.textContent = this.currentPlayer;
+            }
+
+            updateScoreDisplay() {
+                this.scoreX.textContent = this.scores.X;
+                this.scoreO.textContent = this.scores.O;
+                this.scoreDraw.textContent = this.scores.draw;
+            }
+
+            saveScores() {
+                localStorage.setItem('ticTacToeScores', JSON.stringify(this.scores));
+            }
+
+            loadScores() {
+                const savedScores = localStorage.getItem('ticTacToeScores');
+                if (savedScores) {
+                    this.scores = JSON.parse(savedScores);
+                }
+            }
+        }
+
+        // Initialize the game when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new TicTacToe();
+        });
+    </script>
+</body>
+</html>
